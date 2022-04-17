@@ -107,7 +107,8 @@ class Blockchain {
      */
     requestMessageOwnershipVerification(address) {
         return new Promise((resolve) => {
-            
+            const message = `${address}:${new Date().getTime().toString().slice(0, -3)}:starRegistry`;
+            resolve(message);  
         });
     }
 
