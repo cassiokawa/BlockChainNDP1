@@ -7,6 +7,9 @@
  *  the data should be stored encoded.
  *  All the exposed methods should return a Promise to allow all the methods 
  *  run asynchronous.
+ * 
+ * okay
+ * 
  */
 
 const SHA256 = require('crypto-js/sha256');
@@ -37,15 +40,33 @@ class Block {
      */
     validate() {
         let self = this;
-        return new Promise((resolve, reject) => {
+        
+        return new Promise(async(resolve, reject) => {
             // Save in auxiliary variable the current block hash
-                                            
-            // Recalculate the hash of the Block
-            // Comparing if the hashes changed
-            // Returning the Block is not valid
+        
+            let aux_hash ="";
+            aux_hash = self.hash;
             
-            // Returning the Block is valid
-
+            // Recalculate the hash of the Block
+            let aux_block = {
+                hash: null,
+                height: self.height,
+                body: self.body,
+                time: self.time,
+                previousBlockHash: self.previousBlockHash
+            }
+            let calculate_hash = SHA256(JSON.stringify(aux_block)).toString();
+            
+            // Comparing if the hashes changed
+            if (aux_hash != calculate_hash) {
+            
+                // Returning the Block is not valid
+                resolve(0);
+            } else {
+                // Returning the Block is valid
+                resolve(1);
+            }    
+            
         });
     }
 
@@ -58,13 +79,33 @@ class Block {
      *  3. Resolve with the data and make sure that you don't need to return the data for the `genesis block` 
      *     or Reject with an error.
      */
-    getBData() {
-        // Getting the encoded data saved in the Block
-        // Decoding the data to retrieve the JSON representation of the object
-        // Parse the data to an object to be retrieve.
+     getBData() {
+        let self = this;
+        return new Promise(async(resolve, reject) => {
+            if (self.height == 0) {
+                resolve("Genesis block hash");
+            }
 
-        // Resolve with the data if the object isn't the Genesis block
-
+            // Getting the encoded data saved in the Block
+            
+            let data_encoded = this.body;
+            
+            // Decoding the data to retrieve the JSON representation of the object
+            
+            let data_decoded = hex2ascii(data_encoded);
+            
+            // Parse the data to an object to be retrieve.
+            
+            let data_object = JSON.parse(data_decoded);
+            
+            // Resolve with the data if the object isn't the Genesis block
+            
+            if (data_object) {
+                resolve(data_object);
+            } else {
+                reject(Error("Block is empty."))
+            }
+        });
     }
 
 }
